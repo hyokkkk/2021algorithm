@@ -8,17 +8,16 @@ using namespace std;
 int partition(vector<int>&, int, int);
 
 int randomized_select(vector<int> &arr, int begin, int end, int i) {
-    //1. 원소 하나면 그거 return
+    // 1. 원소 하나면 그거 return
     if (begin == end){ return arr[begin]; }
     // 2. quick sort partition 한 후 pivot idx 받는다.
     int pidx = partition(arr, begin, end);
-
-    //TODO: delete
-    cout << "기준점: " << pidx << endl;
-
-
-
-    return -1;
+    // 3. pidx가 전체에서 k번째 작은 수다.
+    int k = pidx - begin + 1;
+    // 3. k vs. i
+    if (k < i){ return randomized_select(arr, pidx+1, end, i-k); }
+    else if (k == i){ return arr[pidx]; }
+    else { return randomized_select(arr, begin, pidx-1, i); }
 }
 
 /* ---------------------------------------------
@@ -29,14 +28,6 @@ int randomized_select(vector<int> &arr, int begin, int end, int i) {
  *            s             u
  */
 int partition (vector<int> &arr, int begin, int end){
-        cout << "before" << endl;
-    for (int i = begin; i <= end; i++){
-        cout << arr[i] << " " << endl;
-    }
-        cout << "" << endl;
-
-
-
     int pidx = end;         // 맨 마지막 원소를 항상 pivot
     int pivot = arr[pidx];
 
