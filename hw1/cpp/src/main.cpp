@@ -14,7 +14,11 @@ int main(int argc, char *argv[]) {
   }
 
   int n, i;
-  vector<int> arr;
+  // arr 하나만 사용하면 randomized_select 수행 시
+  // 배열이 정렬로 인해 망가지므로
+  // linear_select용 arr를 하나 더 추가함.
+  vector<int> arr1;
+  vector<int> arr2;
   ifstream input(argv[1]);
 
   // Read input.
@@ -23,7 +27,8 @@ int main(int argc, char *argv[]) {
     input >> n >> i;
     for (int idx = 0; idx < n; ++idx) {
       input >> a;
-      arr.push_back(a);
+      arr1.push_back(a);
+      arr2.push_back(a);
     }
     input.close();
   } else {
@@ -33,17 +38,17 @@ int main(int argc, char *argv[]) {
 
   // Select i-th element (randomized select).
   clock_t x_start = clock();
-  int x = randomized_select(arr, 0, n-1, i);
+  int x = randomized_select(arr1, 0, n-1, i);
   clock_t x_finish = clock();
 
   // Select i-th element (deterministic select).
   clock_t y_start = clock();
-  int y = linear_select(arr, i);
+  int y = linear_select(arr2, 0, n-1, i);
   clock_t y_finish = clock();
 
   // Check correctness.
-  bool x_correct = check(arr, i, x);
-  bool y_correct = check(arr, i, y);
+  bool x_correct = check(arr1, i, x);
+  bool y_correct = check(arr2, i, y);
 
   cout << "randomized select    : " << x << " ("
        << (x_correct ? "CORRECT" : "WRONG") << ") (elapsed time: "
