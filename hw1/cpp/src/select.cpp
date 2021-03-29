@@ -1,6 +1,8 @@
 #include "select.hpp"
-#include "time.h"
-#include "stdlib.h"
+#include <ctime>
+#include <cstdlib>
+#include "iostream"
+
 
 using namespace std;
 
@@ -9,13 +11,10 @@ int lpartition(vector<int>&, int, int, int);
 void swap(vector<int>&, int, int);
 
 int randomized_select(vector<int> &arr, int begin, int end, int i) {
-    // 1. 원소 하나면 그거 return
-    if (begin == end){ return arr[begin]; }
-    // 2. quick sort partition 한 후 pivot idx 받는다.
-    int pidx = rpartition(arr, begin, end);
-    // 3. pidx가 지금 돈 arr에서 k번째 작은 수다.
-    int k = pidx - begin + 1;
-    // 4. k vs. i
+    if (begin == end){ return arr[begin]; } // 1. 원소 하나면 그거 return
+    int pidx = rpartition(arr, begin, end); // 2. quick sort partition 한 후 pivot idx 받는다.
+    int k = pidx - begin + 1;               // 3. pidx가 지금 돈 arr에서 k번째 작은 수다.
+
     if (k < i){ return randomized_select(arr, pidx+1, end, i-k); }
     else if (k == i){ return arr[pidx]; }
     else { return randomized_select(arr, begin, pidx-1, i); }
@@ -28,7 +27,7 @@ int randomized_select(vector<int> &arr, int begin, int end, int i) {
  *            s             u
  */
 int rpartition (vector<int> &arr, int begin, int end){
-    // 0. decide pivot by random select.
+    // decide pivot by random select.
     // always put pivot at the end of the array. [ridx] <-> [end].
     srand(time(NULL));
     int ridx = rand() % (end - begin + 1) + begin;
@@ -60,11 +59,9 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
     for (int j = 0; j < grpcnt; j++){
         int start = begin + 5*j;
         int fin = start+4 > end ? end : start+4;
-        int mid = (fin-start) / 2 + 1; // 해당 부분배열의 중간idx
-
+        int mid = (fin-start) / 2 + 1;
         medians.push_back(randomized_select(arr, start, fin, mid));
     }
-
     // 4. find median of "medians".
     int median_of_medians = linear_select(medians, 0, grpcnt-1, (grpcnt-1)/2 + 1);
 
@@ -77,7 +74,6 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
     // 6. median을 기준원소로 삼아 전체원소를 분할한다.
     int pidx = lpartition(arr, begin, end, midx);
 
-    //6. 분할 후 적합한 쪽을 선택해 재귀반복.
     int k = pidx - begin + 1;
     if (k < i){ return linear_select(arr, pidx+1, end, i-k); }
     else if(k == i){ return arr[pidx]; }
@@ -86,9 +82,8 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
 
 
 int lpartition (vector<int> &arr, int begin, int end, int pidx){
-    // not a random partition. argument "pidx" is the fixed idx of pivot value.
+    // not a random partition. arr[pidx] becomes the pivot value.
     swap(arr, pidx, end);
-
     int pivot = arr[end];
     int s = begin -1;       // s = smaller의 last elem
     int u = begin;          // u = undecided의 first elem
@@ -108,4 +103,18 @@ void swap(vector<int>& arr, int idx1, int idx2){
 }
 
 
-bool check(vector<int> &arr, int i, int x) { return false; }
+bool check(vector<int> &arr, int ith, int output) {
+    int equal_cnt = 0;      // output과 값이 같은 원소 갯수
+    int smaller_cnt = 0;    // output보다 작은 원소 갯수
+
+    for (int i = 0; i < arr.size(); i++){
+        if (arr[i] < output) { smaller_cnt++; }
+        else if(arr[i] == output) { equal_cnt++; }
+    }
+    return smaller_cnt < ith && ith <= smaller_cnt+equal_cnt;
+}
+/* 0 0 1 1 2 2 3 의 arr가 있다고 하면, 6th elem은 2이다.
+ * smaller_cnt = 4이고, equal_cnt = 2이므로, 해당 output은 5th, 6th의
+ * 원소가 다 될 수 있다. 따라서, ith 원소가 output이 맞는지를 
+ * 확인하기 위해서는 저 범위에 ith가 속하면 된다.
+ */
