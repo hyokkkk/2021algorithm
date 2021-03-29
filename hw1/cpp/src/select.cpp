@@ -4,9 +4,6 @@
 
 using namespace std;
 
-//TODO: delete
-#include <iostream>
-
 int rpartition(vector<int>&, int, int);
 int lpartition(vector<int>&, int, int, int);
 void swap(vector<int>&, int, int);
@@ -31,28 +28,20 @@ int randomized_select(vector<int> &arr, int begin, int end, int i) {
  *            s             u
  */
 int rpartition (vector<int> &arr, int begin, int end){
-    // 0. [begin] ~ [end] 원소 random하게 뽑아서 pivot.
+    // 0. decide pivot by random select.
+    // always put pivot at the end of the array. [ridx] <-> [end].
     srand(time(NULL));
     int ridx = rand() % (end - begin + 1) + begin;
-    // [ridx] <-> [end]. pivot을 맨 뒤로 보냄.
     swap(arr, ridx, end);
 
     int pivot = arr[end];
-
     int s = begin -1;       // s = smaller의 last elem
     int u = begin;          // u = undecided의 first elem
 
     for (; u < end; u++){
-        // 1. [u] < pivot인 경우, [++s] <-> [u]
-        if (arr[u] < pivot){
-            s++;
-            swap(arr, s, u);
-        }
-        // 2. u는 매번 ++
+        if (arr[u] < pivot){ swap(arr, ++s, u); }
     }
-    // 3. [pidx] <-> [++s]
-    s++;
-    swap(arr, end, s);
+    swap(arr, end, ++s);
     return s;
 }
 
@@ -61,112 +50,62 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
 
     // 1. elem이 5개 이하면 i번째 원소를 찾고 끝냄.
     int n = end - begin + 1;
-
-    //TODO:
-    cout<< "들어옴" <<endl;
-    for (int a = begin; a <= end; a++){
-        cout<< arr[a] << " ";
-    }
-    cout << endl;
-    cout << endl;
-
-    if (n <= 5){
-        return randomized_select(arr, begin, end, i);
-    }
+    if (n <= 5){ return randomized_select(arr, begin, end, i); }
 
     // 2. 전체를 5개의 원소를 가진 그룹으로 나눔 -> n/5 + 1개
     int grpcnt= n % 5 ? n/5 + 1 : n/5;
 
-    //TODO:
-    cout << "grp cnt: " << grpcnt << endl;
-
-    vector<int> mtmp;
-    // 3. 각 그룹의 median을 찾음.
+    // 3. find medians of each group, and push into vector.
+    vector<int> medians;
     for (int j = 0; j < grpcnt; j++){
         int start = begin + 5*j;
         int fin = start+4 > end ? end : start+4;
         int mid = (fin-start) / 2 + 1; // 해당 부분배열의 중간idx
 
-        //TODO:
-        cout << "start:" << start << " fin:" << fin << " mid:" << mid << endl;
-
-        int tm = randomized_select(arr, start, fin, mid);
-        // [start+mid-1] <-> [j]. 중간값 찾으면 앞쪽으로 차곡차곡 몬다.
-        // 다 완성되면 [0]~[grpcnt-1] 까지는 각 grp의 midean들임.
-        //
-        //TODO:
-        cout << "median들: "<<tm<<endl;
-
-        mtmp.push_back(tm);
-        //swap(arr, start+mid-1, j);
+        medians.push_back(randomized_select(arr, start, fin, mid));
     }
-    //TODO:
-    cout << ""<< endl;
 
-    // 4. 3에서 찾은 median들의 median을 찾음. [grpcnt-1 /2]에 위치함.
-    // 맨 마지막 arg에는 idx가 아니라 th니까 +1해줌.
-    int median = linear_select(mtmp, 0, grpcnt-1, (grpcnt-1) /2 + 1);
-    cout << "m of m:"<< median << endl;
+    // 4. find median of "medians".
+    int median_of_medians = linear_select(medians, 0, grpcnt-1, (grpcnt-1)/2 + 1);
 
-    //TODO:
-    cout<< "begin: "<<begin<<" end: "<<end<<" index: "<< (grpcnt-1)/2+1<<" pivot: "<<arr[(grpcnt-1)/2]<<endl;
-    //TODO:
-    cout<< "파티션 전" <<endl;
-    for (int a = begin; a <= end; a++){
-        cout<< arr[a] << " ";
-    }
-    cout << endl;
-    cout << endl;
-
-    // pivot이 될 median의 idx 구한다.
+    // 5. find where median_of_medians is located in the original array.
     int midx;
     for (int a = begin; a <= end; a++){
-        if (arr[a] == median){ midx = a; }
+        if (arr[a] == median_of_medians){ midx = a; }
     }
-    // 5. median을 기준원소로 삼아 전체원소를 분할한다.
+
+    // 6. median을 기준원소로 삼아 전체원소를 분할한다.
     int pidx = lpartition(arr, begin, end, midx);
 
-    // 지금 돈 arr에서 k번째로 작은 idx이다.
-    int k = pidx - begin + 1;
-
-    //TODO:
-    cout<< "파티션 후" <<endl;
-    for (int a = begin; a <= end; a++){
-        cout<< arr[a] << " ";
-    }
-    cout << endl;
-    cout << endl;
-
     //6. 분할 후 적합한 쪽을 선택해 재귀반복.
+    int k = pidx - begin + 1;
     if (k < i){ return linear_select(arr, pidx+1, end, i-k); }
     else if(k == i){ return arr[pidx]; }
     else { return linear_select(arr, begin, pidx-1, i); }
 }
 
+
 int lpartition (vector<int> &arr, int begin, int end, int pidx){
+    // not a random partition. argument "pidx" is the fixed idx of pivot value.
     swap(arr, pidx, end);
 
     int pivot = arr[end];
-
     int s = begin -1;       // s = smaller의 last elem
     int u = begin;          // u = undecided의 first elem
 
     for (; u < end; u++){
-        // 1. [u] < pivot인 경우, [++s] <-> [u]
-        if (arr[u] < pivot){
-            s++;
-            swap(arr, s, u);
-        }
-        // 2. u는 매번 ++
+        if (arr[u] < pivot){ swap(arr, ++s, u); }
     }
-    // 3. [pidx] <-> [++s]
-    s++;
-    swap(arr, end, s);
+    swap(arr, end, ++s);
     return s;
 }
+
+
 void swap(vector<int>& arr, int idx1, int idx2){
     int temp = arr[idx1];
     arr[idx1] = arr[idx2];
     arr[idx2] = temp;
 }
+
+
 bool check(vector<int> &arr, int i, int x) { return false; }
