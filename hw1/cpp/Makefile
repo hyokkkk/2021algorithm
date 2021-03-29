@@ -22,6 +22,9 @@ run: $(TARGET)
 	./$(TARGET) input/3.in
 	./$(TARGET) input/4.in
 	./$(TARGET) input/5.in
+	./$(TARGET) input/size100k.in
+	./$(TARGET) input/size500k.in
+	./$(TARGET) input/size1m.in
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@

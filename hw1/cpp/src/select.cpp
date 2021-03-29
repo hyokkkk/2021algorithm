@@ -25,6 +25,8 @@ int randomized_select(vector<int> &arr, int begin, int end, int i) {
  * ---------------------------------------------
  *            ^             ^
  *            s             u
+ * u는 항상 ++,
+ * s는 [u] < pivot인 경우에만 ++하고 ++된 idx에 있던 bigger하고 [u]하고 swap함.
  */
 int rpartition (vector<int> &arr, int begin, int end){
     // decide pivot by random select.
