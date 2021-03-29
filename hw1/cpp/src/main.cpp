@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 
   cout << "randomized select    : " << x << " ("
        << (x_correct ? "CORRECT" : "WRONG") << ") (elapsed time: "
-       << static_cast<double>(x_finish - x_start) / CLOCKS_PER_SEC << " sec)"
+       << static_cast<double>(x_finish - x_start) / CLOCKS_PER_SEC  << " sec)"
        << endl;
   cout << "deterministic select : " << y << " ("
        << (y_correct ? "CORRECT" : "WRONG") << ") (elapsed time: "

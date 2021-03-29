@@ -18,6 +18,10 @@ all: $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET) input/1.in
+	./$(TARGET) input/2.in
+	./$(TARGET) input/3.in
+	./$(TARGET) input/4.in
+	./$(TARGET) input/5.in
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $^ -o $@

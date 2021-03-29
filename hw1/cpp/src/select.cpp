@@ -71,7 +71,7 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
         if (arr[a] == median_of_medians){ midx = a; }
     }
 
-    // 6. median을 기준원소로 삼아 전체원소를 분할한다.
+    // 6. median_of_medians을 기준원소로 삼아 전체원소를 분할한다.
     int pidx = lpartition(arr, begin, end, midx);
 
     int k = pidx - begin + 1;
@@ -115,6 +115,6 @@ bool check(vector<int> &arr, int ith, int output) {
 }
 /* 0 0 1 1 2 2 3 의 arr가 있다고 하면, 6th elem은 2이다.
  * smaller_cnt = 4이고, equal_cnt = 2이므로, 해당 output은 5th, 6th의
- * 원소가 다 될 수 있다. 따라서, ith 원소가 output이 맞는지를 
+ * 원소가 다 될 수 있다. 따라서, ith 원소가 output이 맞는지를
  * 확인하기 위해서는 저 범위에 ith가 속하면 된다.
  */
