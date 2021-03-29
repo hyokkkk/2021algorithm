@@ -80,6 +80,7 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
     //TODO:
     cout << "grp cnt: " << grpcnt << endl;
 
+    vector<int> mtmp;
     // 3. 각 그룹의 median을 찾음.
     for (int j = 0; j < grpcnt; j++){
         int start = begin + 5*j;
@@ -96,14 +97,16 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
         //TODO:
         cout << "median들: "<<tm<<endl;
 
-        swap(arr, start+mid-1, j);
+        mtmp.push_back(tm);
+        //swap(arr, start+mid-1, j);
     }
     //TODO:
     cout << ""<< endl;
 
     // 4. 3에서 찾은 median들의 median을 찾음. [grpcnt-1 /2]에 위치함.
     // 맨 마지막 arg에는 idx가 아니라 th니까 +1해줌.
-    cout << "m of m:"<< linear_select(arr, 0, grpcnt-1, (grpcnt-1) /2 + 1) << endl;
+    int median = linear_select(mtmp, 0, grpcnt-1, (grpcnt-1) /2 + 1);
+    cout << "m of m:"<< median << endl;
 
     //TODO:
     cout<< "begin: "<<begin<<" end: "<<end<<" index: "<< (grpcnt-1)/2+1<<" pivot: "<<arr[(grpcnt-1)/2]<<endl;
@@ -114,8 +117,14 @@ int linear_select(vector<int> &arr, int begin, int end, int i) {
     }
     cout << endl;
     cout << endl;
+
+    // pivot이 될 median의 idx 구한다.
+    int midx;
+    for (int a = begin; a <= end; a++){
+        if (arr[a] == median){ midx = a; }
+    }
     // 5. median을 기준원소로 삼아 전체원소를 분할한다.
-    int pidx = lpartition(arr, begin, end, (grpcnt-1) /2);
+    int pidx = lpartition(arr, begin, end, midx);
 
     // 지금 돈 arr에서 k번째로 작은 idx이다.
     int k = pidx - begin + 1;
