@@ -58,38 +58,76 @@ int rpartition (vector<int> &arr, int begin, int end){
 
 
 int linear_select(vector<int> &arr, int begin, int end, int i) {
+
     // 1. elem이 5개 이하면 i번째 원소를 찾고 끝냄.
     int n = end - begin + 1;
+
+    //TODO:
+    cout<< "들어옴" <<endl;
+    for (int a = begin; a <= end; a++){
+        cout<< arr[a] << " ";
+    }
+    cout << endl;
+    cout << endl;
+
     if (n <= 5){
         return randomized_select(arr, begin, end, i);
     }
+
     // 2. 전체를 5개의 원소를 가진 그룹으로 나눔 -> n/5 + 1개
     int grpcnt= n % 5 ? n/5 + 1 : n/5;
+
     //TODO:
     cout << "grp cnt: " << grpcnt << endl;
+
     // 3. 각 그룹의 median을 찾음.
     for (int j = 0; j < grpcnt; j++){
         int start = begin + 5*j;
         int fin = start+4 > end ? end : start+4;
         int mid = (fin-start) / 2 + 1; // 해당 부분배열의 중간idx
+
         //TODO:
         cout << "start:" << start << " fin:" << fin << " mid:" << mid << endl;
+
         int tm = randomized_select(arr, start, fin, mid);
         // [start+mid-1] <-> [j]. 중간값 찾으면 앞쪽으로 차곡차곡 몬다.
         // 다 완성되면 [0]~[grpcnt-1] 까지는 각 grp의 midean들임.
+        //
         //TODO:
         cout << "median들: "<<tm<<endl;
+
         swap(arr, start+mid-1, j);
     }
     //TODO:
     cout << ""<< endl;
+
     // 4. 3에서 찾은 median들의 median을 찾음. [grpcnt-1 /2]에 위치함.
     // 맨 마지막 arg에는 idx가 아니라 th니까 +1해줌.
     cout << "m of m:"<< linear_select(arr, 0, grpcnt-1, (grpcnt-1) /2 + 1) << endl;
+
+    //TODO:
+    cout<< "begin: "<<begin<<" end: "<<end<<" index: "<< (grpcnt-1)/2+1<<" pivot: "<<arr[(grpcnt-1)/2]<<endl;
+    //TODO:
+    cout<< "파티션 전" <<endl;
+    for (int a = begin; a <= end; a++){
+        cout<< arr[a] << " ";
+    }
+    cout << endl;
+    cout << endl;
     // 5. median을 기준원소로 삼아 전체원소를 분할한다.
-    int pidx = lpartition(arr, begin, end, (grpcnt-1) /2 +1);
+    int pidx = lpartition(arr, begin, end, (grpcnt-1) /2);
+
     // 지금 돈 arr에서 k번째로 작은 idx이다.
     int k = pidx - begin + 1;
+
+    //TODO:
+    cout<< "파티션 후" <<endl;
+    for (int a = begin; a <= end; a++){
+        cout<< arr[a] << " ";
+    }
+    cout << endl;
+    cout << endl;
+
     //6. 분할 후 적합한 쪽을 선택해 재귀반복.
     if (k < i){ return linear_select(arr, pidx+1, end, i-k); }
     else if(k == i){ return arr[pidx]; }
